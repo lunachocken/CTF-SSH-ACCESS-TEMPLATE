@@ -16,20 +16,20 @@ tasks:
       # - task: env
       - task: build
     desc: Build Docker
-    cmds:
+    cmds: # Sets it up such that any changes to Dockerfile/Compose.yml automatically restarts
       - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} watch"
     # silent: true
   build:
     cmds:
       - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} build"
 
-  run_detatch:
+  run_detatch: # Starts the service and detaches
     cmds:
       - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} up -d"
   down:
     cmds:
       - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} down"
 
-  pre-commit:
+  pre-commit: # https://pre-commit.com/
     cmds:
       - pre-commit install # Installs hooks so precommit runs
