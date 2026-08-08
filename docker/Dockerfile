@@ -9,7 +9,9 @@
 # https://hub.docker.com/_/debian
 # https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
 FROM debian:bookworm-slim
-USER root
+
+# hadolint ignore=DL3002
+USER 0:0
 
 ARG CTF_FLAG="LUNA{SUDO_SU}"
 ARG FLAG_PATH=/root/flag.txt
@@ -18,8 +20,9 @@ ARG USER_NAME="s"
 
 COPY entrypoint.sh /
 
+# hadolint ignore=DL3008,DL3009
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade \
-	&& apt-get install -y openssh-server ca-certificates nano \
+	&& apt-get install --no-install-recommends -y openssh-server ca-certificates nano \
 	sudo # <package_name> e.g. sudo Challenge Specific Packages Required ############################################### \
 # Utils
 	# && apt-get install -y mc htop iotop ncdu tar zip nano vim bash sudo sed \
@@ -42,6 +45,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade \
 	&& apt-get autoremove -y \
 	&& rm -rf /var/lib/{apt,dpkg,cache,log}/ \
 	&& rm -rf /var/lib/apt/lists/*.lz4 \
+	&& rm /var/lib/apt/lists -rf \
 	&& rm -rf /var/log/* \
 	&& rm -rf /tmp/* \
 	&& rm -rf /var/tmp/* \
@@ -53,14 +57,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade \
 
 #### CHALLENGE SPECIFIC SETUP #############################
 
-RUN useradd -m -u 1000 -s /bin/bash ${USER_NAME}
-RUN chown ${USER_NAME}:${USER_NAME} /home/${USER_NAME} 
-
-# Setup Flag
-RUN echo ${CTF_FLAG} > ${FLAG_PATH}
-RUN chown ${FLAG_OWNER}:${FLAG_OWNER} ${FLAG_PATH}
-RUN chmod 700 ${FLAG_PATH}
-
+# This creates the entrypoint user and FLAG
+RUN \
+	useradd -m -u 1000 -s /bin/bash ${USER_NAME} \
+	chown ${USER_NAME}:${USER_NAME} /home/${USER_NAME} \
+	echo ${CTF_FLAG} > ${FLAG_PATH} # Setup Flag \
+	chown ${FLAG_OWNER}:${FLAG_OWNER} ${FLAG_PATH} \
+	chmod 700 ${FLAG_PATH}
 
 
 EXPOSE 22/tcp

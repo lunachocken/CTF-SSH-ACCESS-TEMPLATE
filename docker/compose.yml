@@ -1,6 +1,6 @@
 services:
   main:
-    build: 
+    build:
       dockerfile: ./docker/Dockerfile
       context: ..
       args:

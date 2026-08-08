@@ -10,7 +10,7 @@ This template is designed for challenges that require the user to SSH into the m
 
 ## Deployment
 
-### Configuration 
+### Configuration
 All configuration is via config vars in compose.yml
 
 CTF_FLAG
