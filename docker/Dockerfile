@@ -59,10 +59,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade \
 
 # This creates the entrypoint user and FLAG
 RUN \
-	useradd -m -u 1000 -s /bin/bash ${USER_NAME} \
-	chown ${USER_NAME}:${USER_NAME} /home/${USER_NAME} \
-	echo ${CTF_FLAG} > ${FLAG_PATH} # Setup Flag \
-	chown ${FLAG_OWNER}:${FLAG_OWNER} ${FLAG_PATH} \
+	useradd -m -u 1000 -s /bin/bash ${USER_NAME} && \
+	chown ${USER_NAME}:${USER_NAME} /home/${USER_NAME} && \
+	echo ${CTF_FLAG} > ${FLAG_PATH} # Setup Flag && \
+	chown ${FLAG_OWNER}:${FLAG_OWNER} ${FLAG_PATH} && \
 	chmod 700 ${FLAG_PATH}
 
 
