@@ -1,10 +1,9 @@
-
 # SSH Access Template
 
 This template is designed for challenges that require the user to SSH into the machine to run things on the system.
 
 # Template README example
-
+Title: (Delete this line and above)
 # A rushed permission config
 
 
