@@ -18,7 +18,7 @@ tasks:
       # - task: build
     desc: Build and start
     cmds: # Sets it up such that any changes to Dockerfile/Compose.yml automatically restarts
-      - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} watch"
+      - "docker compose --env-file .env -f {{.DOCKER_PATH}}/{{.COMPOSE}} watch"
     # silent: true
   env:
     cmds:
