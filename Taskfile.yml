@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+vars:
+  DOCKER_PATH: docker
+  COMPOSE: 
+    sh: "basename $(find . -name '*compose*')"
+
+
+### RUN: "task" in terminal to build and run
+
+tasks:
+  default:
+    deps:
+      # - task: env
+      - task: build
+    desc: Build Docker
+    cmds:
+      - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} up -d"
+    # silent: true
+  build:
+    cmds:
+      - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} build"

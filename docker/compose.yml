@@ -1,0 +1,16 @@
+services:
+  main:
+    build: 
+      dockerfile: ./docker/Dockerfile
+      context: ..
+      args:
+        USER_NAME: &username "inspecto"
+        USER_PASSWORD: &userpass "inspecto"
+        CTF_FLAG: "LUNA{SUDO_SU}"
+        # FLAG_PATH: /root/flag.txt
+        # FLAG_OWNER: "root"
+    ports:
+      - "2222:22" # SSH Port
+    environment:
+      USER_NAME: *username
+      USER_PASSWORD: *userpass
