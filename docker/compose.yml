@@ -4,12 +4,13 @@ services:
       dockerfile: ./docker/Dockerfile
       context: ..
       args:
-        USER_NAME: &username "inspecto"
-        USER_PASSWORD: &userpass "inspecto"
-        CTF_FLAG: "LUNA{SUDO_SU}"
+        # DO NOT QUOTE around the keys ${USER_NAME:-"luna"} -> "luna" as in it will include the quotes
+        USER_NAME: &username ${USER_NAME:-luna}
+        USER_PASSWORD: &userpass ${USER_PASSWORD:-luna}
+        CTF_FLAG: ${CTF_FLAG:-LUNA{TEMPLATE_REPLACE_ME_FLAG_ENV_OR_DIRECTLY}}
         # FLAG_PATH: /root/flag.txt
         # FLAG_OWNER: "root"
-    develop:
+    develop: # Delete the container with "task down" if your change doesnt appear to have worked
       watch:
         - path: Dockerfile
           action: rebuild
