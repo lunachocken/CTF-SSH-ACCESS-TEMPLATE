@@ -1,7 +1,7 @@
 repos:
   # --- Standard File Integrity Checks ---
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -10,18 +10,18 @@ repos:
 
   # --- Bash Validation ---
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.8.0-1
+    rev: v3.13.1-1
     hooks:
       - id: shfmt
         args: ["-w", "-s", "-i", "2"] # Format bash scripts (2-space indent)
 
   - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.10.0
+    rev: v0.11.0
     hooks:
       - id: shellcheck # Lints bash scripts for syntax & subtle logic bugs
 
   # --- Dockerfile Validation ---
   - repo: https://github.com/hadolint/hadolint
-    rev: v2.12.0
+    rev: v2.15.1
     hooks:
     - id: hadolint-docker
