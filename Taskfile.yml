@@ -12,13 +12,19 @@ vars:
 
 tasks:
   default:
-    # deps:
+    deps:
+      - task: env
       # - task: env
       # - task: build
     desc: Build and start
     cmds: # Sets it up such that any changes to Dockerfile/Compose.yml automatically restarts
       - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} watch"
     # silent: true
+  env:
+    cmds:
+      - cp env.example .env -n
+    generates:
+      - .env
   build:
     cmds:
       - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} build"
