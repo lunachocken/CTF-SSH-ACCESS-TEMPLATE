@@ -48,3 +48,10 @@ e.g.
 - Save the file
 - ``sudo su``
 - ``cat /root/flag.txt``
+
+
+## Author
+
+LunaChocken - Created this template
+
+Replace this section

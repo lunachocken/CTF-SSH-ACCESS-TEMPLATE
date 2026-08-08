@@ -17,8 +17,19 @@ tasks:
       - task: build
     desc: Build Docker
     cmds:
-      - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} up -d"
+      - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} watch"
     # silent: true
   build:
     cmds:
       - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} build"
+
+  run_detatch:
+    cmds:
+      - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} up -d"
+  down:
+    cmds:
+      - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} down"
+
+  pre-commit:
+    cmds:
+      - pre-commit install # Installs hooks so precommit runs
