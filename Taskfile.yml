@@ -23,8 +23,10 @@ tasks:
   env:
     cmds:
       - cp env.example .env -n
-    generates:
-      - .env
+      - echo "Update your .env file with new secrets"
+      - exit 1
+    status: # checks .env exists and doesn't run
+      - test ".env"
   build:
     cmds:
       - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} build"
@@ -36,6 +38,7 @@ tasks:
     cmds:
       - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} down"
 
-  pre-commit: # https://pre-commit.com/
+  pre-commit: # Install pre-commit and run all - Only required once # https://pre-commit.com/
     cmds:
       - pre-commit install # Installs hooks so precommit runs
+      - pre-commit run --all-files
