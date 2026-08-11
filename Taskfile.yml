@@ -26,7 +26,7 @@ tasks:
       - echo "Update your .env file with new secrets"
       - exit 1
     status: # checks .env exists and doesn't run
-      - test ".env"
+      - test -f ".env"
   build:
     cmds:
       - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} build"
