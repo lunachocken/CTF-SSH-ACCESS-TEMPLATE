@@ -1,1 +1,5 @@
+# Local environment file (created from env.example) - contains secrets
+.env
+.env.*
+
 .ruff_cache

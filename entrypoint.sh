@@ -1,30 +1,39 @@
-#!/bin/bash
-## SETUP SSH PASSWORD ACCESS
+#!/usr/bin/env bash
+set -euo pipefail
 
-echo "Start entrypoint.sh"
+# =============================================================================
+# entrypoint.sh - runs on every container start.
+# Sets up the SSH runtime, generates host keys (once) and sets the
+# password for the challenge user from the environment variables:
+#   USER_NAME, USER_PASSWORD
+# =============================================================================
 
-set -e
+echo "[entrypoint] Starting..."
 
-# Folder for sshd. No Change.
+# Directory that sshd requires for privilege separation.
 mkdir -p /var/run/sshd
 
-# Key generation
-ls /etc/ssh/ssh_host_* >/dev/null 2>&1 && echo "Keys is found" || echo "Key generation." && ssh-keygen -A
+# Sensible defaults when the environment variables are not provided.
+USER_NAME="${USER_NAME:-luna}"
+USER_PASSWORD="${USER_PASSWORD:-luna}"
 
-# Environment variables that are used if not empty:
-# USER_PASSWORD
-
-#Set password
-if [ -f /.ispasswordset ]; then
-  echo "Password already set"
+# Generate fresh host keys only when none are present yet.
+if ls /etc/ssh/ssh_host_* >/dev/null 2>&1; then
+  echo "[entrypoint] SSH host keys already present."
 else
-  echo "Set  password of user for sshd"
-  echo "${USER_NAME}":"${USER_PASSWORD}" | chpasswd
+  echo "[entrypoint] Generating SSH host keys..."
+  ssh-keygen -A
+fi
+
+# Set the user's password once per container instance.
+# (The marker file lives in the writable container layer, so a fresh
+#  container re-creates it and applies any new password.)
+if [ -f /.ispasswordset ]; then
+  echo "[entrypoint] Password already configured."
+else
+  echo "[entrypoint] Setting password for user '${USER_NAME}'."
+  echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd
   touch /.ispasswordset
 fi
-###############################################
-# CTF Specific Section
-
-###############################################
 
 exec "$@"

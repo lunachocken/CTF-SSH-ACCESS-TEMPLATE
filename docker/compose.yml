@@ -1,24 +1,36 @@
+# Project name used for container/image naming. Override per challenge with
+# COMPOSE_PROJECT_NAME in your .env file.
+name: ${COMPOSE_PROJECT_NAME:-ctf-ssh}
+
 services:
   main:
     build:
-      dockerfile: ./docker/Dockerfile
       context: ..
+      dockerfile: docker/Dockerfile
       args:
-        # DO NOT QUOTE around the keys ${USER_NAME:-"luna"} -> "luna" as in it will include the quotes
+        # NOTE: values are NOT quoted around the ${...} defaults - quotes would
+        # be passed through as literal characters into the image.
         USER_NAME: &username ${USER_NAME:-luna}
-        USER_PASSWORD: &userpass ${USER_PASSWORD:-luna}
         CTF_FLAG: ${CTF_FLAG:-LUNA{TEMPLATE_REPLACE_ME_FLAG_ENV_OR_DIRECTLY}}
-        # FLAG_PATH: /root/flag.txt
-        # FLAG_OWNER: "root"
-    develop: # Delete the container with "task down" if your change doesnt appear to have worked
+        FLAG_PATH: ${FLAG_PATH:-/root/flag.txt}
+        FLAG_OWNER: ${FLAG_OWNER:-root}
+    develop:
+      # "task" (docker compose watch) rebuilds the container whenever any of
+      # these files change. Use "task down" if a change still isn't applied.
       watch:
         - path: Dockerfile
           action: rebuild
         - path: compose.yml
           action: rebuild
+        - path: ../entrypoint.sh
+          action: rebuild
+        - path: ../.env
+          action: rebuild
 
     ports:
-      - "2222:22" # SSH Port
+      - "2222:22" # Host:container - SSH is exposed on port 2222
+
+    # Values injected at runtime (read by entrypoint.sh).
     environment:
       USER_NAME: *username
-      USER_PASSWORD: *userpass
+      USER_PASSWORD: ${USER_PASSWORD:-luna}

@@ -3,42 +3,55 @@
 version: '3'
 
 vars:
-  DOCKER_PATH: docker
-  COMPOSE:
-    sh: "basename $(find . -name '*compose*')"
+  COMPOSE_FILE: docker/compose.yml
+  ENV_FILE: .env
 
-
-### RUN: "task" in terminal to build and run
+### Run "task" in the terminal to build and start
 
 tasks:
   default:
+    desc: Create .env on first run, then build and start in watch mode
     deps:
-      - task: env
-      # - task: env
-      # - task: build
-    desc: Build and start
-    cmds: # Sets it up such that any changes to Dockerfile/Compose.yml automatically restarts
-      - "docker compose --env-file .env -f {{.DOCKER_PATH}}/{{.COMPOSE}} watch"
+      - env
+    cmds:
+      # docker compose watch rebuilds/restarts whenever the Dockerfile,
+      # compose.yml, entrypoint.sh or .env change.
+      - "docker compose --env-file {{.ENV_FILE}} -f {{.COMPOSE_FILE}} watch"
     # silent: true
+
   env:
+    desc: Create the .env file from env.example (skipped if it already exists)
     cmds:
       - cp env.example .env -n
       - echo "Update your .env file with new secrets"
+      # Fail on purpose so "task" stops and waits for you to fill in .env.
       - exit 1
-    status: # checks .env exists and doesn't run
-      - test -f ".env"
+    status:
+      - test -f "{{.ENV_FILE}}"
+
   build:
+    desc: Build the image
     cmds:
-      - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} build"
+      - "docker compose --env-file {{.ENV_FILE}} -f {{.COMPOSE_FILE}} build"
 
-  run_detatch: # Starts the service and detaches
+  run_detach:
+    desc: Start the stack in the background (detached)
     cmds:
-      - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} up -d"
+      - "docker compose --env-file {{.ENV_FILE}} -f {{.COMPOSE_FILE}} up -d"
+
+  logs:
+    desc: Follow the container logs
+    cmds:
+      - "docker compose --env-file {{.ENV_FILE}} -f {{.COMPOSE_FILE}} logs -f"
+
   down:
+    desc: Stop and remove the containers
     cmds:
-      - "docker compose -f {{.DOCKER_PATH}}/{{.COMPOSE}} down"
+      - "docker compose --env-file {{.ENV_FILE}} -f {{.COMPOSE_FILE}} down"
 
-  pre-commit: # Install pre-commit and run all - Only required once # https://pre-commit.com/
+  pre-commit:
+    desc: Install pre-commit hooks and run them against all files
+    # https://pre-commit.com/
     cmds:
-      - pre-commit install # Installs hooks so precommit runs
+      - pre-commit install
       - pre-commit run --all-files
